@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import(RhrPocCoreCommonConfiguration.class)
 @ComponentScan(basePackageClasses = RhrPocCoreApiPackage.class)
+@Import(RhrPocCoreCommonConfiguration.class)
 public class RhrpocCoreApiConfiguration {
 }
