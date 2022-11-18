@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getCorrelationId;
 import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getRandomUuid;
@@ -23,10 +20,15 @@ import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getRandomUuid;
 public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
+    public static final String ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO = "CANNOT_BE_DIVIDED_BY_ZERO";
 
     @ExceptionHandler(RhrCannotBeDividedByZero.class)
     public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(RhrCannotBeDividedByZero ex) {
-        return logExceptionAndCreateResponse("RHR_CANNOT_BE_DIVIDED_BY_ZERO", ex, HttpStatus.BAD_REQUEST);
+        return logExceptionAndCreateResponse(
+                ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO,
+                ex,
+                HttpStatus.BAD_REQUEST,
+                Collections.singletonList(new ErrorParameterDto().key(ex.getParams().get(0)).value(ex.getParams().get(1))));
     }
 
     ResponseEntity<Object> logExceptionAndCreateResponse(String emsg, RuntimeException exception, HttpStatus httpStatus) {
@@ -34,27 +36,28 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
 
     }
 
-    ResponseEntity<Object> logExceptionAndCreateResponse(String emsg, RuntimeException exception, HttpStatus httpStatus, List<ErrorParameterDto> errors) {
-        logexception(emsg, exception, errors);
+    ResponseEntity<Object> logExceptionAndCreateResponse(String emsg, RuntimeException exception, HttpStatus httpStatus, List<ErrorParameterDto> params) {
+        logexception(emsg, exception, params);
         return ResponseEntity
                 .status(httpStatus)
-                .body(createError(emsg)
-                        .parameters(errors));
+                .body(createError(emsg, params));
     }
 
-    private void logexception(String emsg, RuntimeException e, List<ErrorParameterDto> errors) {
-        log.error(emsg, e.getMessage(), errors);
+    private void logexception(String emsg, RuntimeException e, List<ErrorParameterDto> params) {
+        log.error(emsg, e.getMessage(), params);
     }
 
-    private ErrorItemDto createError(String code, ErrorParameterDto... parameterDtos) {
+    private ErrorDto createError(String code, List<ErrorParameterDto> params) {
         return new ErrorDto()
-                .collerationId(getCorrelationId())
-                .time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toOffsetDateTime())
-                .uuid(getRandomUuid())
-                .code((code))
-                .severity(ErrorItemDto.SeverityEnum.ERROR)
-                .parameters(
-                        Stream.of(parameterDtos).filter(Objects::nonNull).collect(Collectors.toList())
+                .errorItemDtos(
+                        Collections.singletonList(new ErrorItemDto()
+                                .collerationId(getCorrelationId())
+                                .time(LocalDateTime.now().atZone(ZoneId.systemDefault()).toOffsetDateTime())
+                                .uuid(getRandomUuid())
+                                .code((code))
+                                .severity(ErrorItemDto.SeverityEnum.ERROR)
+                                .parameters(params)
+                        )
                 );
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @ApiModel(description = "Error data transfer object ")
-public class ErrorDto extends ErrorItemDto implements Serializable {
+public class ErrorDto /* extends ErrorItemDto */ implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
