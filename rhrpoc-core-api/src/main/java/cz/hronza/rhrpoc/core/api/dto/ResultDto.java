@@ -1,12 +1,7 @@
 package cz.hronza.rhrpoc.core.api.dto;
 
-import cz.hronza.rhrpoc.core.common.enums.OperationsEnum;
-
 public class ResultDto {
-
-    //TODO přidat OperationsEnum
-
-    private OperationsEnum operationsEnum;
+    private String operation;
     private String result;
 
 
@@ -19,12 +14,12 @@ public class ResultDto {
         return this;
     }
 
-       public OperationsEnum getOperationsEnum() {
-        return operationsEnum;
+    public String getOperation() {
+        return operation;
     }
 
-    public ResultDto setOperationsEnum(OperationsEnum operationsEnum) {
-        this.operationsEnum = operationsEnum;
+    public ResultDto setOperation(String operation) {
+        this.operation = operation;
         return this;
     }
 }
