@@ -2,10 +2,13 @@ package cz.hronza.rhrpoc.core.common.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,16 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
 
     private static final Logger log = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
     public static final String ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO = "CANNOT_BE_DIVIDED_BY_ZERO";
+
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported
+            (HttpRequestMethodNotSupportedException ex,
+             HttpHeaders headers,
+             HttpStatus status,
+             WebRequest request)
+    {
+        List<ErrorItemDto> errorItemDtos = List.of(new ErrorItemDto().code("444"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(new ErrorDto().errorItemDtos(errorItemDtos));
+    }
 
     @ExceptionHandler(RhrCannotBeDividedByZero.class)
     public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(RhrCannotBeDividedByZero ex) {
