@@ -39,7 +39,9 @@ public class PocCoreHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final String authorizationHeader = request.getHeader("Authorization");
         if (isUriProtected(request.getRequestURI()) && !basicAuthorizationApplication.equals(authorizationHeader)) {
-            throw new PocAccessForbidenException();
+            // FIXME tohle odkomentovat aby fungovala Basic Auth:
+            // throw new PocAccessForbidenException();
+            return true;
         } else return true;
     }
 
