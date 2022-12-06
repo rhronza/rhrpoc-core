@@ -27,8 +27,9 @@ import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getRandomUuid;
 @ControllerAdvice
 public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
     public static final String ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO = "CANNOT_BE_DIVIDED_BY_ZERO";
+
+    private static final Logger log4j = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
 
 
     @Override
@@ -43,31 +44,31 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
 
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.error("handleMissingPathVariable: ", ex);
+        log4j.error("handleMissingPathVariable: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
         return super.handleMissingPathVariable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.error( "handleTypeMismatch: ", ex);
+        log4j.error("handleTypeMismatch: status={} {}, message={}, property name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getPropertyName());
         return super.handleTypeMismatch(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.error( "handleMissingServletRequestParameter: ", ex);
+        log4j.error("handleMissingServletRequestParameter: status={} {}, message={}, parameter name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameterName());
         return super.handleMissingServletRequestParameter(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.error( "handleHttpMessageNotReadable: ", ex);
+        log4j.error("handleHttpMessageNotReadable: status={} {}, message={}, http input message={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getHttpInputMessage());
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        logger.error( "hhandleMethodArgumentNotValid: ", ex);
+        log4j.error("handleMethodArgumentNotValid: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
         return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
@@ -93,7 +94,7 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
     }
 
     private void logexception(String emsg, RuntimeException e, List<ErrorParameterDto> params) {
-        log.error(emsg, e.getMessage(), params);
+        log4j.error(emsg, e.getMessage(), params);
     }
 
     private ErrorDto createError(String code, List<ErrorParameterDto> params) {
