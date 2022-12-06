@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 @Import(RhrPocCoreCommonConfiguration.class)
 public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
 
-
+    //TODO define application context
     private static final System.Logger logger = System.getLogger(RhrpocCoreApiConfiguration.class.getSimpleName());
     public static final String ERROR_MESSAGE_PATTERN = "%s=%s";
 
@@ -44,12 +44,13 @@ public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
     private final ObjectMapper objectMapper;
 
     private static final OffsetDateTime OFFSET_DATE_TIME_MIN = localdateTimeToOffsetDateTime(
-            LocalDateTime.of(LocalDate.of(1900, 1, 3), LocalTime.MIN));
+            LocalDateTime.of(LocalDate.of(1900, 1, 1), LocalTime.MIN));
 
     private static final OffsetDateTime OFFSET_DATE_TIME_MAX = localdateTimeToOffsetDateTime(
             LocalDateTime.of(LocalDate.of(2900, 12, 31), LocalTime.MAX));
 
 
+    /* neexistující object Mapper blbnul i Adnats */
     public RhrpocCoreApiConfiguration(@Value("${poc.basic.auth.user}") String user,
                                       @Value("${poc.basic.auth.password}") String password,
                                       ObjectMapper objectMapper) {
@@ -101,7 +102,7 @@ public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
     /**
      * add interceptor do WebMvc
      *
-     * @param registry
+     * @param registry registry in WebMcv model: {@link WebMvcConfigurer }
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
