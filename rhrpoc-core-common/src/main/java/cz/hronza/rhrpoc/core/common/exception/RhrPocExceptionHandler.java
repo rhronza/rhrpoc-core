@@ -2,10 +2,15 @@ package cz.hronza.rhrpoc.core.common.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -25,14 +30,45 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
     private static final Logger log = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
     public static final String ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO = "CANNOT_BE_DIVIDED_BY_ZERO";
 
+
+    @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported
             (HttpRequestMethodNotSupportedException ex,
              HttpHeaders headers,
              HttpStatus status,
-             WebRequest request)
-    {
+             WebRequest request) {
         List<ErrorItemDto> errorItemDtos = List.of(new ErrorItemDto().code("444"));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(new ErrorDto().errorItemDtos(errorItemDtos));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.error("handleMissingPathVariable: ", ex);
+        return super.handleMissingPathVariable(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.error( "handleTypeMismatch: ", ex);
+        return super.handleTypeMismatch(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.error( "handleMissingServletRequestParameter: ", ex);
+        return super.handleMissingServletRequestParameter(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.error( "handleHttpMessageNotReadable: ", ex);
+        return super.handleHttpMessageNotReadable(ex, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        logger.error( "hhandleMethodArgumentNotValid: ", ex);
+        return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
     @ExceptionHandler(RhrCannotBeDividedByZero.class)

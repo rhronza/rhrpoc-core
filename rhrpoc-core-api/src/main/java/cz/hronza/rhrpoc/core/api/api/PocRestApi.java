@@ -1,5 +1,6 @@
 package cz.hronza.rhrpoc.core.api.api;
 
+import cz.hronza.rhrpoc.core.api.dto.OffsetDateTimeOutputDto;
 import cz.hronza.rhrpoc.core.api.dto.OutputDto;
 import cz.hronza.rhrpoc.core.api.dto.ResultDto;
 import cz.hronza.rhrpoc.core.api.dto.SellerAndSoldProductsDto;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.validation.Valid;
+import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -161,6 +164,7 @@ public interface PocRestApi {
         return addSellerAndSoldPoducts(sellerAndSoldProductsDto);
 
     }
+
     default ResponseEntity<SellerAndSoldProductsDto> addSellerAndSoldPoducts(SellerAndSoldProductsDto sellerAndSoldProductsDto) {
         this.getRequest().ifPresent((request) -> {
             Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
@@ -187,8 +191,24 @@ public interface PocRestApi {
         return this.reverseEndpointFromEasyBe(id, name);
 
     }
+
     default ResponseEntity<OutputDto> reverseEndpointFromEasyBe(String id, String name) {
         return ResponseEntity.ok(new OutputDto("not yet implemented", "not yet implemented"));
+    }
+
+    @GetMapping(
+            value = "/plus-days-for-offsetdatetime",
+            produces = APPLICATION_JSON
+    )
+    default ResponseEntity<OffsetDateTimeOutputDto> _plusDaysForOffsetdatetime(
+            @ApiParam("") @Valid @RequestParam(value = "offsetDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime offsetDateTime,
+            @ApiParam("") @Valid @RequestParam(value = "days", required = false) Integer days
+    ) {
+        return this.plusDaysForOffsetdatetime(offsetDateTime, days);
+    }
+
+    default ResponseEntity<OffsetDateTimeOutputDto> plusDaysForOffsetdatetime(OffsetDateTime offsetDateTime, Integer days) {
+        return ResponseEntity.ok(new OffsetDateTimeOutputDto(OffsetDateTime.MIN));
     }
 }
 
