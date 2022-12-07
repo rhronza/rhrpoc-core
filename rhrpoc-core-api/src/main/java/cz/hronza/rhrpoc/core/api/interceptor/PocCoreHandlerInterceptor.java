@@ -1,6 +1,7 @@
 package cz.hronza.rhrpoc.core.api.interceptor;
 
-import cz.hronza.rhrpoc.core.common.exception.PocAccessForbidenException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +17,11 @@ import java.util.function.Predicate;
 
 public class PocCoreHandlerInterceptor implements HandlerInterceptor {
 
-    private static final System.Logger logger = System.getLogger(PocCoreHandlerInterceptor.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(PocCoreHandlerInterceptor.class);
+
+    /**
+     * tyhle endpoity jsou chráněné:
+     */
     private static final List<Predicate<String>> UNPROTECTED_PREDICATE_URI_ITEMS = Arrays.asList(
             uri -> uri.startsWith("/actuator"),
             uri -> uri.startsWith("/version")
@@ -26,7 +31,7 @@ public class PocCoreHandlerInterceptor implements HandlerInterceptor {
 
     public PocCoreHandlerInterceptor(String user, String password) {
         //TODO vyhodit:
-        logger.log(System.Logger.Level.INFO, String.format("%s:%s", user, password));
+        log.info("{}:{}", user, password);
 
         basicAuthorizationApplication = "Basic " + Base64
                 .getEncoder()
