@@ -3,6 +3,7 @@ package cz.hronza.rhrpoc.core.api.api;
 import cz.hronza.rhrpoc.core.api.dto.OffsetDateTimeOutputDto;
 import cz.hronza.rhrpoc.core.api.dto.OutputDto;
 import cz.hronza.rhrpoc.core.api.dto.ResultDto;
+import cz.hronza.rhrpoc.core.api.dto.ResultRecDto;
 import cz.hronza.rhrpoc.core.api.dto.SellerAndSoldProductsDto;
 import cz.hronza.rhrpoc.core.common.enums.MultipleOperationsEnum;
 import cz.hronza.rhrpoc.core.common.enums.OperationsEnum;
@@ -59,7 +60,7 @@ public interface PocRestApi {
             value = "/calculation",
             produces = APPLICATION_JSON
     )
-    default ResponseEntity<ResultDto> _makeOperation(
+    default ResponseEntity<ResultRecDto> _makeOperation(
             @Valid @RequestParam Integer variableA,
             @Valid @RequestParam Integer variableB,
             @Valid @RequestParam OperationsEnum operationsEnum
@@ -68,7 +69,7 @@ public interface PocRestApi {
 
     }
 
-    default ResponseEntity<ResultDto> makeOperation(
+    default ResponseEntity<ResultRecDto> makeOperation(
             @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableA,
             @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableB,
             @ApiParam(value = "", required = true) @Valid @RequestParam OperationsEnum operationsEnum) {
@@ -109,7 +110,7 @@ public interface PocRestApi {
             value = "/calculation/{multipleOperationsEnum}",
             produces = APPLICATION_JSON
     )
-    default ResponseEntity<ResultDto> _makeMultipleOperation(
+    default ResponseEntity<ResultRecDto> _makeMultipleOperation(
             @Valid @PathVariable MultipleOperationsEnum multipleOperationsEnum,
             @Valid @RequestParam List<Integer> numbers
     ) {
@@ -117,7 +118,7 @@ public interface PocRestApi {
 
     }
 
-    default ResponseEntity<ResultDto> makeMultipleOperation(
+    default ResponseEntity<ResultRecDto> makeMultipleOperation(
             @ApiParam(value = "", required = true) @Valid @PathVariable MultipleOperationsEnum multipleOperationsEnum,
             @ApiParam(value = "", required = true) @Valid @RequestParam List<Integer> numbers
     ) {
