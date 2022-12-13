@@ -81,6 +81,11 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
                 Collections.singletonList(new ErrorParameterDto().key(ex.getParams().get(0)).value(ex.getParams().get(1))));
     }
 
+    @ExceptionHandler(PocAccessForbidenException.class)
+    public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(PocAccessForbidenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
+    }
+
     ResponseEntity<Object> logExceptionAndCreateResponse(String emsg, RuntimeException exception, HttpStatus httpStatus) {
         return logExceptionAndCreateResponse(emsg, exception, httpStatus, Collections.emptyList());
 

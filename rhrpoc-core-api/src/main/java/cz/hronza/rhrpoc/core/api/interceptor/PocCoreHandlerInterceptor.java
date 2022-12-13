@@ -1,5 +1,6 @@
 package cz.hronza.rhrpoc.core.api.interceptor;
 
+import cz.hronza.rhrpoc.core.common.exception.PocAccessForbidenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,9 +45,7 @@ public class PocCoreHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final String authorizationHeader = request.getHeader("Authorization");
         if (isUriProtected(request.getRequestURI()) && !basicAuthorizationApplication.equals(authorizationHeader)) {
-            // FIXME tohle odkomentovat aby fungovala Basic Auth:
-            // throw new PocAccessForbidenException();
-            return true;
+            throw new PocAccessForbidenException();
         } else return true;
     }
 
