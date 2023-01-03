@@ -1,5 +1,6 @@
 package cz.hronza.rhrpoc.core.api.api;
 
+import cz.hronza.rhrpoc.core.api.dto.StockItemsMovementsListDtoRec;
 import cz.hronza.rhrpoc.core.api.dto.OffsetDateTimeOutputDto;
 import cz.hronza.rhrpoc.core.api.dto.OutputDto;
 import cz.hronza.rhrpoc.core.api.dto.ResultDto;
@@ -163,7 +164,6 @@ public interface PocRestApi {
     default ResponseEntity<SellerAndSoldProductsDto> _addSellerAndSoldPoducts(
             @ApiParam(value = "", required = true) @Valid @RequestBody SellerAndSoldProductsDto sellerAndSoldProductsDto) {
         return addSellerAndSoldPoducts(sellerAndSoldProductsDto);
-
     }
 
     default ResponseEntity<SellerAndSoldProductsDto> addSellerAndSoldPoducts(SellerAndSoldProductsDto sellerAndSoldProductsDto) {
@@ -210,6 +210,39 @@ public interface PocRestApi {
 
     default ResponseEntity<OffsetDateTimeOutputDto> plusDaysForOffsetdatetime(OffsetDateTime offsetDateTime, Integer days) {
         return ResponseEntity.ok(new OffsetDateTimeOutputDto(OffsetDateTime.MIN));
+    }
+
+    @ApiOperation(
+            value = "get stock items and movements",
+            nickname = "getStockItemsAndMovements",
+            notes = "get stock items  and movements",
+            response = StockItemsMovementsListDtoRec.class,
+            tags = "RHR_POC_STOCK_ITEMS_AND_AND_MOVEMENTS"
+    )
+    @ApiResponses({@ApiResponse(
+            code = 200,
+            message = "succesfull response message",
+            response = StockItemsMovementsListDtoRec.class
+    )})
+    @GetMapping(value = "/get-stock-items-and-movements", produces = APPLICATION_JSON)
+    default ResponseEntity<StockItemsMovementsListDtoRec> _getStockItemsAndMovements(
+             @Valid @RequestParam(value = "stockIds", required = true) List<Long> stockIds
+    ) {
+        return getStockItemsAndMovements(stockIds);
+    }
+    default ResponseEntity<StockItemsMovementsListDtoRec> getStockItemsAndMovements(List<Long> stockIds) {
+        this.getRequest().ifPresent((request) -> {
+            Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
+            while (var1.hasNext()) {
+                MediaType mediaType = (MediaType) var1.next();
+                if (mediaType.isCompatibleWith(MediaType.valueOf(APPLICATION_JSON))) {
+                    Integer exampleId = 123456;
+                    ApiUtil.setSomeResponse(request, APPLICATION_JSON, exampleId.toString());
+                    break;
+                }
+            }
+        });
+        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
     }
 }
 
