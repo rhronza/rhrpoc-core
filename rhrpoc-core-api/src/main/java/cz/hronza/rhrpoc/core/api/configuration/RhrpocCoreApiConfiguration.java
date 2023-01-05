@@ -13,6 +13,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import cz.hronza.rhrpoc.core.api.RhrPocCoreApiPackage;
 import cz.hronza.rhrpoc.core.api.interceptor.PocCoreHandlerInterceptor;
 import cz.hronza.rhrpoc.core.common.configuration.RhrPocCoreCommonConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,8 +38,8 @@ import java.time.format.DateTimeFormatter;
 public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
 
     //TODO define application context
-    private static final System.Logger logger = System.getLogger(RhrpocCoreApiConfiguration.class.getSimpleName());
-    public static final String ERROR_MESSAGE_PATTERN = "%s=%s";
+    private static final Logger log = LoggerFactory.getLogger(RhrpocCoreApiConfiguration.class);
+    public static final String ERROR_MESSAGE_PATTERN = "{}={}";
 
     private final PocCoreHandlerInterceptor pocCoreHandlerInterceptor;
 
@@ -56,7 +58,7 @@ public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
                                       ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.pocCoreHandlerInterceptor = new PocCoreHandlerInterceptor(user, password);
-        logger.log(System.Logger.Level.INFO, "interceptor initialized");
+        log.info("interceptor initialized");
     }
 
     @PostConstruct
@@ -72,15 +74,15 @@ public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
                     @Override
                     public OffsetDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
                         String inputValueAsString = jsonParser.getValueAsString();
-                        logger.log(System.Logger.Level.INFO, String.format(ERROR_MESSAGE_PATTERN, "inputValueAsString", inputValueAsString));
-                        logger.log(System.Logger.Level.INFO, String.format(ERROR_MESSAGE_PATTERN, "deserialized value", inputValueAsString != null ? OffsetDateTime.parse(inputValueAsString, DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null));
+                        log.info(ERROR_MESSAGE_PATTERN, "inputValueAsString", inputValueAsString);
+                        log.info(ERROR_MESSAGE_PATTERN, "deserialized value", inputValueAsString != null ? OffsetDateTime.parse(inputValueAsString, DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null);
                         return inputValueAsString != null ? OffsetDateTime.parse(inputValueAsString, DateTimeFormatter.ISO_OFFSET_DATE_TIME) : null;
                     }
                 })
                 .addSerializer(OffsetDateTime.class, new JsonSerializer<OffsetDateTime>() {
                     @Override
                     public void serialize(OffsetDateTime offsetDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-                        logger.log(System.Logger.Level.INFO, String.format(ERROR_MESSAGE_PATTERN, "serialized value", offsetDateTimeToString(offsetDateTime)));
+                        log.info(ERROR_MESSAGE_PATTERN, "serialized value", offsetDateTimeToString(offsetDateTime));
                         jsonGenerator.writeString(offsetDateTimeToString(offsetDateTime));
                     }
                 });
@@ -107,6 +109,6 @@ public class RhrpocCoreApiConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(pocCoreHandlerInterceptor);
-        logger.log(System.Logger.Level.INFO, "interceptor added");
+        log.info("interceptor added");
     }
 }
