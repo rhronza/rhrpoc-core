@@ -1,6 +1,5 @@
 package cz.hronza.rhrpoc.core.api.interceptor;
 
-import cz.hronza.rhrpoc.core.common.exception.PocAccessForbidenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -24,15 +23,13 @@ public class PocCoreHandlerInterceptor implements HandlerInterceptor {
      * tyhle endpoity jsou chráněné:
      */
     private static final List<Predicate<String>> UNPROTECTED_PREDICATE_URI_ITEMS = Arrays.asList(
-            uri -> uri.startsWith("/actuator"),
-            uri -> uri.startsWith("/version")
+            uri -> uri.startsWith("/calculation"),
+            uri -> uri.startsWith("/plus-days-for-offsetdatetime")
     );
 
     private final String basicAuthorizationApplication;
 
     public PocCoreHandlerInterceptor(String user, String password) {
-        //TODO vyhodit:
-        log.info("{}:{}", user, password);
 
         basicAuthorizationApplication = "Basic " + Base64
                 .getEncoder()
@@ -45,8 +42,11 @@ public class PocCoreHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         final String authorizationHeader = request.getHeader("Authorization");
         if (isUriProtected(request.getRequestURI()) && !basicAuthorizationApplication.equals(authorizationHeader)) {
-            throw new PocAccessForbidenException();
-        } else return true;
+            log.warn("authorization is off");
+//            log.info("authorization is ON");
+//            throw new PocAccessForbidenException();
+        }
+        return true;
     }
 
     private boolean isUriProtected(String inputUri) {
