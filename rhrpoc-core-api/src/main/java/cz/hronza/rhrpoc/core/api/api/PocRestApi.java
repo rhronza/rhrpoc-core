@@ -1,14 +1,16 @@
 package cz.hronza.rhrpoc.core.api.api;
 
-import cz.hronza.rhrpoc.core.api.dto.StockItemsMovementsListDtoRec;
+import cz.hronza.rhrpoc.core.api.dto.NewStockId;
 import cz.hronza.rhrpoc.core.api.dto.OffsetDateTimeOutputDto;
 import cz.hronza.rhrpoc.core.api.dto.OutputDto;
 import cz.hronza.rhrpoc.core.api.dto.ResultDto;
 import cz.hronza.rhrpoc.core.api.dto.ResultRecDto;
-import cz.hronza.rhrpoc.core.api.dto.SellerAndSoldProductsDto;
+import cz.hronza.rhrpoc.core.api.dto.StockDtoRec;
+import cz.hronza.rhrpoc.core.api.dto.StockItemsMovementsListRecDto;
 import cz.hronza.rhrpoc.core.common.enums.MultipleOperationsEnum;
 import cz.hronza.rhrpoc.core.common.enums.OperationsEnum;
 import cz.hronza.rhrpoc.core.common.exception.ErrorDto;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -30,12 +32,31 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+@Api
 public interface PocRestApi {
-
     String APPLICATION_JSON = "application/json";
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
+    }
+
+    default ResponseEntity<ResultRecDto> makeOperation(
+            @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableA,
+            @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableB,
+            @ApiParam(value = "", required = true) @Valid @RequestParam OperationsEnum operationsEnum) {
+        this.getRequest().ifPresent(request -> {
+            Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
+            while (var1.hasNext()) {
+                MediaType mediaType = (MediaType) var1.next();
+                if (mediaType.isCompatibleWith(MediaType.valueOf(APPLICATION_JSON))) {
+
+                    ;
+                    String someJson = "{addresKey}";
+                    ApiUtil.setSomeResponse(request, APPLICATION_JSON, someJson);
+                }
+            }
+        });
+        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ApiOperation(
@@ -48,12 +69,12 @@ public interface PocRestApi {
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Calculate the result was successful.",
-                    response = SellerAndSoldProductsDto.class
+                    message = "Calculation was successful.",
+                    response = ResultDto.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Calculate the result was successful.",
+                    message = "Calculation was unsuccessful.",
                     response = ErrorDto.class
             )
     })
@@ -70,24 +91,6 @@ public interface PocRestApi {
 
     }
 
-    default ResponseEntity<ResultRecDto> makeOperation(
-            @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableA,
-            @ApiParam(value = "", required = true) @Valid @RequestParam Integer variableB,
-            @ApiParam(value = "", required = true) @Valid @RequestParam OperationsEnum operationsEnum) {
-        this.getRequest().ifPresent(request -> {
-            Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
-            while (var1.hasNext()) {
-                MediaType mediaType = (MediaType) var1.next();
-                if (mediaType.isCompatibleWith(MediaType.valueOf(APPLICATION_JSON))) {
-
-                    String someJson = "{addresKey}"; //TODO dodělat
-                    ApiUtil.setSomeResponse(request, APPLICATION_JSON, someJson);
-                }
-            }
-        });
-        return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
-    }
-
     @ApiOperation(
             value = "Calculate multiple operations the result.",
             nickname = "makeMultipleOperation",
@@ -99,7 +102,7 @@ public interface PocRestApi {
             @ApiResponse(
                     code = 200,
                     message = "Calculate multiple operations the result was successful.",
-                    response = SellerAndSoldProductsDto.class
+                    response = ResultDto.class
             ),
             @ApiResponse(
                     code = 400,
@@ -139,34 +142,34 @@ public interface PocRestApi {
 
     @ApiOperation(
             value = "Adding salesman a sold products.",
-            nickname = "addSellerAndSoldPoducts",
-            notes = "Service for adding a seller and a list of his sold products.",
-            response = SellerAndSoldProductsDto.class,
-            tags = {"ADD_SALESMAN_A_SOLD_PRODUCTS"}
+            nickname = "addNewStock",
+            notes = "Service for adding new stock.",
+            response = StockDtoRec.class,
+            tags = {"ADD_NEW_STOCK"}
     )
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Adding salesman a sold products was successful.",
-                    response = SellerAndSoldProductsDto.class
+                    message = "Add new stock.",
+                    response = StockDtoRec.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Adding salesman a sold products was unsuccessful.",
+                    message = "Adding new stock was unsuccessful.",
                     response = ErrorDto.class
             )
     })
     @PostMapping(
-            value = "/add-seller-and-sold-poducts",
+            value = "/add-new-stock",
             consumes = APPLICATION_JSON,
             produces = APPLICATION_JSON
     )
-    default ResponseEntity<SellerAndSoldProductsDto> _addSellerAndSoldPoducts(
-            @ApiParam(value = "", required = true) @Valid @RequestBody SellerAndSoldProductsDto sellerAndSoldProductsDto) {
-        return addSellerAndSoldPoducts(sellerAndSoldProductsDto);
+    default ResponseEntity<NewStockId> _addNewStock(
+            @ApiParam(value = "", required = true) @Valid @RequestBody StockDtoRec stockDtoRec) {
+        return addNewStock(stockDtoRec);
     }
 
-    default ResponseEntity<SellerAndSoldProductsDto> addSellerAndSoldPoducts(SellerAndSoldProductsDto sellerAndSoldProductsDto) {
+    default ResponseEntity<NewStockId> addNewStock(StockDtoRec stockDtoRec) {
         this.getRequest().ifPresent((request) -> {
             Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
             while (var1.hasNext()) {
@@ -216,21 +219,22 @@ public interface PocRestApi {
             value = "get stock items and movements",
             nickname = "getStockItemsAndMovements",
             notes = "get stock items  and movements",
-            response = StockItemsMovementsListDtoRec.class,
+            response = StockItemsMovementsListRecDto.class,
             tags = "RHR_POC_STOCK_ITEMS_AND_AND_MOVEMENTS"
     )
     @ApiResponses({@ApiResponse(
             code = 200,
             message = "succesfull response message",
-            response = StockItemsMovementsListDtoRec.class
+            response = StockItemsMovementsListRecDto.class
     )})
     @GetMapping(value = "/get-stock-items-and-movements", produces = APPLICATION_JSON)
-    default ResponseEntity<StockItemsMovementsListDtoRec> _getStockItemsAndMovements(
-             @Valid @RequestParam(value = "stockIds", required = true) List<Long> stockIds
+    default ResponseEntity<StockItemsMovementsListRecDto> _getStockItemsAndMovements(
+            @Valid @RequestParam(value = "stockIds", required = true) List<Long> stockIds
     ) {
         return getStockItemsAndMovements(stockIds);
     }
-    default ResponseEntity<StockItemsMovementsListDtoRec> getStockItemsAndMovements(List<Long> stockIds) {
+
+    default ResponseEntity<StockItemsMovementsListRecDto> getStockItemsAndMovements(List<Long> stockIds) {
         this.getRequest().ifPresent((request) -> {
             Iterator var1 = MediaType.parseMediaTypes(request.getHeader("Accept")).iterator();
             while (var1.hasNext()) {
