@@ -11,7 +11,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -24,12 +23,14 @@ import java.util.List;
 import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getCorrelationId;
 import static cz.hronza.rhrpoc.core.common.utils.RequestUtils.getRandomUuid;
 
-@ControllerAdvice
+//@ControllerAdvice
 public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHandler {
 
     public static final String ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO = "CANNOT_BE_DIVIDED_BY_ZERO";
+    public static final String ERROR_MESSAGE_RHR_POC_NOT_SAVED_EXCEPTION = "NOT_SAVED";
+    public static final String ERROR_MESSAGE_RHR_POC_NOT_FOUND_EXCEPTION = "NOT_FOUND";
 
-    private static final Logger log4j = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(RhrPocExceptionHandler.class);
 
 
     @Override
@@ -44,36 +45,36 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
 
     @Override
     protected ResponseEntity<Object> handleMissingPathVariable(MissingPathVariableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log4j.error("handleMissingPathVariable: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
+        log.error("handleMissingPathVariable: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
         return super.handleMissingPathVariable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log4j.error("handleTypeMismatch: status={} {}, message={}, property name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getPropertyName());
+        log.error("handleTypeMismatch: status={} {}, message={}, property name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getPropertyName());
         return super.handleTypeMismatch(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log4j.error("handleMissingServletRequestParameter: status={} {}, message={}, parameter name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameterName());
+        log.error("handleMissingServletRequestParameter: status={} {}, message={}, parameter name={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameterName());
         return super.handleMissingServletRequestParameter(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log4j.error("handleHttpMessageNotReadable: status={} {}, message={}, http input message={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getHttpInputMessage());
+        log.error("handleHttpMessageNotReadable: status={} {}, message={}, http input message={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getHttpInputMessage());
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log4j.error("handleMethodArgumentNotValid: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
+        log.error("handleMethodArgumentNotValid: status={} {}, message={}, parameter={}", status.value(), status.getReasonPhrase(), ex.getMessage(), ex.getParameter());
         return super.handleMethodArgumentNotValid(ex, headers, status, request);
     }
 
-    @ExceptionHandler(RhrCannotBeDividedByZero.class)
-    public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(RhrCannotBeDividedByZero ex) {
+    @ExceptionHandler(RhrPocCannotBeDividedByZero.class)
+    public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(RhrPocCannotBeDividedByZero ex) {
         return logExceptionAndCreateResponse(
                 ERROR_MESSAGE_RHR_CANNOT_BE_DIVIDED_BY_ZERO,
                 ex,
@@ -81,8 +82,38 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
                 Collections.singletonList(new ErrorParameterDto().key(ex.getParams().get(0)).value(ex.getParams().get(1))));
     }
 
-    @ExceptionHandler(PocAccessForbidenException.class)
-    public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(PocAccessForbidenException ex) {
+    @ExceptionHandler(RhrPocNotSavedException.class)
+    public ResponseEntity<Object> rhrPocNotSavedExceptionHandler(RhrPocNotSavedException ex) {
+        List<ErrorParameterDto> errorParameterDtos =
+                ex.getParameters()
+                        .stream()
+                        .map(parameter -> new ErrorParameterDto().setKey(parameter.key()).setValue(parameter.value()))
+                        .toList();
+
+        return logExceptionAndCreateResponse(
+                ERROR_MESSAGE_RHR_POC_NOT_SAVED_EXCEPTION,
+                ex,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorParameterDtos);
+    }
+
+    @ExceptionHandler(RhrPocNotFoundException.class)
+    public ResponseEntity<Object> rhrPocNotFoundExceptionHandler(RhrPocNotFoundException ex) {
+        List<ErrorParameterDto> errorParameterDtos =
+                ex.getParameters()
+                        .stream()
+                        .map(parameter -> new ErrorParameterDto().setKey(parameter.key()).setValue(parameter.value()))
+                        .toList();
+
+        return logExceptionAndCreateResponse(
+                ERROR_MESSAGE_RHR_POC_NOT_FOUND_EXCEPTION,
+                ex,
+                HttpStatus.NOT_FOUND,
+                errorParameterDtos);
+    }
+
+    @ExceptionHandler(RhrPocAccessForbidenException.class)
+    public ResponseEntity<Object> rhrCannotBeDividedByZeroExceptionHandler(RhrPocAccessForbidenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UNAUTHORIZED");
     }
 
@@ -99,7 +130,7 @@ public abstract class RhrPocExceptionHandler extends ResponseEntityExceptionHand
     }
 
     private void logexception(String emsg, RuntimeException e, List<ErrorParameterDto> params) {
-        log4j.error(emsg, e.getMessage(), params);
+        log.error(emsg, e.getMessage(), params);
     }
 
     private ErrorDto createError(String code, List<ErrorParameterDto> params) {
