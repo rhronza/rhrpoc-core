@@ -19,10 +19,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 
@@ -32,7 +34,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-@Api
+
+@CrossOrigin
+@RequestMapping("/rhrpoc/v1")
 public interface PocRestApi {
     String APPLICATION_JSON = "application/json";
 
@@ -160,7 +164,7 @@ public interface PocRestApi {
             )
     })
     @PostMapping(
-            value = "/add-new-stock",
+            value = "/new-stock",
             consumes = APPLICATION_JSON,
             produces = APPLICATION_JSON
     )
