@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 
 public record MovementDtoRec(
         Long stockId,
-        Long storedItemId,
+        Long itemId,
         Float amount,
         OffsetDateTime created
 ) {

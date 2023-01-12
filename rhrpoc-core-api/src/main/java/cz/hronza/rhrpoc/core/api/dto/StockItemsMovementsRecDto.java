@@ -6,6 +6,6 @@ public record StockItemsMovementsRecDto(
         Long id,
         String title,
         Integer area,
-        List<StockItemsRecDto> stockList
+        List<StockItemsRecDto> stockItemList
 ) {
 }

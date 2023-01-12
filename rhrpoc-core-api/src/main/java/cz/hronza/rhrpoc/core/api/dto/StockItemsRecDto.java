@@ -5,10 +5,10 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public record StockItemsRecDto(
-        String storedItemTitle,
-        String storedItemDescription,
+        String itemTitle,
+        String itemDescription,
         Long stockId,
-        Long storedItemId,
+        Long itemId,
         Long currenAmount,
         Long minimalAmount,
         LocalDate dateLastStocking,
