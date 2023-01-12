@@ -28,8 +28,8 @@ import static cz.hronza.rhrpoc.core.api.api.Constant.APPLICATION_JSON;
 
 
 @CrossOrigin
-@RequestMapping("/operation/v1")
-public interface PocRestApiOperation {
+@RequestMapping("/calculation/v1")
+public interface PocRestApiCalculation {
 
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
@@ -72,7 +72,7 @@ public interface PocRestApiOperation {
             )
     })
     @GetMapping(
-            value = "/calculation",
+            value = "",
             produces = Constant.APPLICATION_JSON
     )
     default ResponseEntity<ResultRecDto> _makeOperation(
@@ -104,7 +104,7 @@ public interface PocRestApiOperation {
             )
     })
     @GetMapping(
-            value = "/calculation/{multipleOperationsEnum}",
+            value = "/{multipleOperationsEnum}",
             produces = APPLICATION_JSON
     )
     default ResponseEntity<ResultRecDto> _makeMultipleOperation(
