@@ -34,7 +34,7 @@ public interface PocRestApiStock {
     }
 
     @PostMapping(
-            value = "/stock",
+            value = "",
             consumes = APPLICATION_JSON,
             produces = APPLICATION_JSON
     )
@@ -70,7 +70,7 @@ public interface PocRestApiStock {
             message = "succesfull response message",
             response = StockItemsMovementsListRecDto.class
     )})
-    @GetMapping(value = "/stock-items-and-movements", produces = APPLICATION_JSON)
+    @GetMapping(value = "/items-and-movements", produces = APPLICATION_JSON)
     default ResponseEntity<StockItemsMovementsListRecDto> _getStockItemsAndMovements(
             @Valid @RequestParam(value = "stockIds", required = true) List<Long> stockIds
     ) {
